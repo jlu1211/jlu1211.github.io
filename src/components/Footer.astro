@@ -1,0 +1,15 @@
+---
+import type { SiteContent } from '../data/i18n/types';
+
+interface Props {
+  content: SiteContent;
+}
+
+const { content } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>{content.footer.note}</p>
+  </div>
+</footer>

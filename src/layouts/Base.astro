@@ -1,0 +1,168 @@
+---
+import type { SiteContent } from '../data/i18n/types';
+import { email, profiles, siteUrl } from '../data/i18n/facts';
+import '../styles/global.css';
+
+interface Props {
+  content: SiteContent;
+  alternates?: boolean;
+  title?: string;
+  robots?: string;
+}
+
+const { content, alternates = true, title, robots } = Astro.props;
+const origin = Astro.site?.toString().replace(/\/$/, '') ?? siteUrl;
+const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const canonical = new URL(path, `${origin}/`).toString();
+const enUrl = `${origin}/`;
+const jaUrl = `${origin}/ja/`;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Jiachen Lu',
+  alternateName: ['Chris', 'Jiachen (Chris) Lu', '盧 嘉宸', 'ロ カチン'],
+  url: enUrl,
+  image: `${origin}/og.png`,
+  email,
+  jobTitle: 'M.S. Computer Science student',
+  description: content.schemaDescription,
+  knowsLanguage: ['en', 'ja', 'zh'],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Los Angeles',
+    addressRegion: 'California',
+    addressCountry: 'US',
+  },
+  affiliation: {
+    '@type': 'CollegeOrUniversity',
+    name: 'University of Southern California',
+  },
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'University of Washington',
+  },
+  sameAs: [profiles.linkedin, profiles.github],
+};
+---
+
+<!doctype html>
+<html lang={content.meta.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ?? content.meta.title}</title>
+    <meta name="description" content={content.meta.description} />
+    {robots && <meta name="robots" content={robots} />}
+    <meta name="author" content="Jiachen Lu" />
+    <link rel="canonical" href={canonical} />
+    {
+      alternates && (
+        <>
+          <link rel="alternate" hreflang="en" href={enUrl} />
+          <link rel="alternate" hreflang="ja" href={jaUrl} />
+          <link rel="alternate" hreflang="x-default" href={enUrl} />
+        </>
+      )
+    }
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={content.meta.title} />
+    <meta property="og:description" content={content.meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${origin}/og.png`} />
+    <meta property="og:image:alt" content={content.meta.ogImageAlt} />
+    <meta property="og:locale" content={content.meta.ogLocale} />
+    <meta property="og:locale:alternate" content={content.meta.ogLocaleAlternate} />
+    <meta property="profile:first_name" content="Jiachen" />
+    <meta property="profile:last_name" content="Lu" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={content.meta.title} />
+    <meta name="twitter:description" content={content.meta.description} />
+    <meta name="twitter:image" content={`${origin}/og.png`} />
+    <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131311" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+        } catch (e) {}
+      })();
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
+  </head>
+  <body>
+    <a class="skip" href="#content">{content.ui.skip}</a>
+    <slot />
+    <script>
+      const root = document.documentElement;
+      const key = 'theme';
+      const button = document.querySelector('[data-theme-toggle]');
+
+      const applyLabel = (theme: string) => {
+        if (!button) return;
+        const toDark = button.getAttribute('data-to-dark') ?? 'Switch to dark mode';
+        const toLight = button.getAttribute('data-to-light') ?? 'Switch to light mode';
+        const nextLabel = theme === 'dark' ? toLight : toDark;
+        button.setAttribute('aria-label', nextLabel);
+        button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+      };
+
+      const apply = (theme: 'light' | 'dark') => {
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        applyLabel(theme);
+      };
+
+      applyLabel(root.dataset.theme === 'dark' ? 'dark' : 'light');
+
+      button?.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        try {
+          localStorage.setItem(key, next);
+        } catch (e) {
+          /* private mode */
+        }
+        apply(next);
+      });
+
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      media.addEventListener('change', (event) => {
+        let stored: string | null = null;
+        try {
+          stored = localStorage.getItem(key);
+        } catch (e) {
+          stored = null;
+        }
+        if (stored !== 'light' && stored !== 'dark') {
+          apply(event.matches ? 'dark' : 'light');
+        }
+      });
+
+      document.querySelectorAll('[data-keep-hash]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+          if (!location.hash) return;
+          const anchor = link as HTMLAnchorElement;
+          event.preventDefault();
+          location.assign(anchor.pathname + location.hash);
+        });
+      });
+    </script>
+  </body>
+</html>

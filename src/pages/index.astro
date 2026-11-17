@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import SiteMain from '../components/SiteMain.astro';
+import Footer from '../components/Footer.astro';
+import content from '../data/i18n/en';
+---
+
+<Base content={content}>
+  <Header content={content} />
+  <SiteMain content={content} />
+  <Footer content={content} />
+</Base>
