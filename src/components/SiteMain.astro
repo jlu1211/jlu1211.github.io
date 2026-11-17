@@ -1,0 +1,301 @@
+---
+import type { SiteContent } from '../data/i18n/types';
+
+interface Props {
+  content: SiteContent;
+}
+
+const { content } = Astro.props;
+const { hero, about, education, experience, projects, skills, languagesSection, resume, contact, ui } =
+  content;
+---
+
+<main id="content">
+  <section class="hero" id="top">
+    <div class="wrap">
+      <p class="kicker">{hero.kicker}</p>
+      <h1 lang={hero.nameLang}>{hero.name}</h1>
+      {hero.reading && <p class="reading" lang="ja">{hero.reading}</p>}
+      {hero.altName && <p class="alt-name" lang={hero.altNameLang}>{hero.altName}</p>}
+      <div class="hero-grid">
+        <div>
+          <p class="lede">{hero.summary}</p>
+          <p class="preference">{hero.preference}</p>
+          <div class="cta-row">
+            {
+              hero.ctas.map((cta, index) => (
+                <a
+                  class:list={['btn', index === 0 && 'btn-primary']}
+                  href={cta.href}
+                  target={cta.external ? '_blank' : undefined}
+                  rel={cta.external ? 'noopener noreferrer me' : undefined}
+                >
+                  {cta.label}
+                  {cta.external && <span class="sr-only"> ({ui.opensNewTab})</span>}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+        <aside class="fact-card">
+          <dl>
+            {
+              hero.facts.map((fact) => (
+                <div>
+                  <dt>{fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={about.id} aria-labelledby="about-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{about.index}</p>
+        <h2 id="about-title">{about.title}</h2>
+      </div>
+      <div class="about">
+        {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={education.id} aria-labelledby="education-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{education.index}</p>
+        <h2 id="education-title">{education.title}</h2>
+      </div>
+      <p class="intro">{education.intro}</p>
+      <div class="stack">
+        {
+          education.schools.map((school) => (
+            <article class="school">
+              <h3>{school.school}</h3>
+              <p class="degree">{school.degree}</p>
+              <p class="meta">
+                {school.dates} · {school.location}
+              </p>
+              <p class="gpa">{school.gpa}</p>
+              <ul>
+                {school.points.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={experience.id} aria-labelledby="experience-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{experience.index}</p>
+        <h2 id="experience-title">{experience.title}</h2>
+      </div>
+      <p class="intro">{experience.intro}</p>
+      <div class="stack">
+        {
+          experience.roles.map((role) => (
+            <article class="role">
+              <div class="role-layout">
+                <div>
+                  <p class="meta">{role.dates}</p>
+                  <p class="meta">{role.location}</p>
+                </div>
+                <div>
+                  <h3>{role.org}</h3>
+                  <p class="role-title">{role.title}</p>
+                  {role.note && <p class="caveat">{role.note}</p>}
+                  <ul>
+                    {role.points.map((point) => (
+                      <li>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={projects.id} aria-labelledby="projects-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{projects.index}</p>
+        <h2 id="projects-title">{projects.title}</h2>
+      </div>
+      <p class="intro">{projects.intro}</p>
+      <div class="project-grid">
+        {
+          projects.items.map((project) => (
+            <article class="project">
+              <h3>{project.title}</h3>
+              <p class="meta">{project.context}</p>
+              <p>{project.summary}</p>
+              {project.href && project.linkLabel && (
+                <a class="repo" href={project.href} target="_blank" rel="noopener noreferrer">
+                  {project.linkLabel}
+                  <span class="sr-only"> ({ui.opensNewTab})</span>
+                </a>
+              )}
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={skills.id} aria-labelledby="skills-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{skills.index}</p>
+        <h2 id="skills-title">{skills.title}</h2>
+      </div>
+      <p class="intro">{skills.intro}</p>
+      <div class="skill-grid">
+        {
+          skills.groups.map((group) => (
+            <article class="skill">
+              <h3>{group.title}</h3>
+              <p>{group.items}</p>
+              {group.note && <p class="skill-note">{group.note}</p>}
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={languagesSection.id} aria-labelledby="languages-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{languagesSection.index}</p>
+        <h2 id="languages-title">{languagesSection.title}</h2>
+      </div>
+      <p class="intro">{languagesSection.intro}</p>
+      <div class="lang-grid">
+        {
+          languagesSection.items.map((item) => (
+            <article class="lang">
+              <h3>{item.name}</h3>
+              <p>{item.detail}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={resume.id} aria-labelledby="resume-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{resume.index}</p>
+        <h2 id="resume-title">{resume.title}</h2>
+      </div>
+      <p class="intro">{resume.intro}</p>
+      <p class="pending">{resume.pendingNote}</p>
+      <div class="resume-grid">
+        {
+          resume.files.map((file) => (
+            <article class="resume-card">
+              <a
+                class="btn"
+                href={file.href}
+                data-resume
+                data-label={file.label}
+                data-missing-label={file.missingLabel}
+              >
+                <span data-resume-label>{file.label}</span>
+              </a>
+              <p class="file-status" data-resume-status aria-live="polite">{file.missingLabel}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={contact.id} aria-labelledby="contact-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="index" aria-hidden="true">{contact.index}</p>
+        <h2 id="contact-title">{contact.title}</h2>
+      </div>
+      <p class="intro">{contact.intro}</p>
+      <ul class="contact-list">
+        {
+          contact.links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                target={link.external ? '_blank' : undefined}
+                rel={link.external ? 'noopener noreferrer me' : undefined}
+              >
+                {link.label}
+                {link.external && <span class="sr-only"> ({ui.opensNewTab})</span>}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</main>
+
+<script>
+  const readyText = document.documentElement.lang === 'ja' ? 'PDFをダウンロードできます' : 'PDF ready to download';
+
+  async function probe(url: string): Promise<'ok' | 'missing' | 'unknown'> {
+    try {
+      let response = await fetch(url, { method: 'HEAD' });
+      if (response.status === 405 || response.status === 501) {
+        response = await fetch(url, { method: 'GET' });
+      }
+      if (response.status === 404) return 'missing';
+      const type = (response.headers.get('content-type') || '').toLowerCase();
+      if (response.ok && (type.includes('pdf') || type.includes('octet-stream'))) return 'ok';
+      if (response.ok && type.includes('text/html')) return 'missing';
+      if (response.ok && type === '') return 'unknown';
+      if (response.ok) return 'ok';
+      return 'unknown';
+    } catch {
+      return 'unknown';
+    }
+  }
+
+  document.querySelectorAll('[data-resume]').forEach((node) => {
+    const link = node as HTMLAnchorElement;
+    const status = link.parentElement?.querySelector('[data-resume-status]');
+    const missingLabel = link.dataset.missingLabel ?? 'PDF not uploaded yet';
+
+    link.addEventListener('click', (event) => {
+      if (link.dataset.unavailable === 'true') event.preventDefault();
+    });
+
+    probe(link.href).then((result) => {
+      if (result === 'missing') {
+        link.dataset.unavailable = 'true';
+        link.classList.add('is-unavailable');
+        link.setAttribute('aria-disabled', 'true');
+        link.removeAttribute('download');
+        if (status) status.textContent = missingLabel;
+      } else if (result === 'ok') {
+        link.dataset.unavailable = 'false';
+        link.classList.remove('is-unavailable');
+        link.removeAttribute('aria-disabled');
+        link.setAttribute('download', '');
+        if (status) status.textContent = readyText;
+      }
+    });
+  });
+</script>

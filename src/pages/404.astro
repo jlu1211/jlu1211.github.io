@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import content from '../data/i18n/en';
+---
+
+<Base content={content} alternates={false} title="Page not found · Jiachen (Chris) Lu" robots="noindex">
+  <main id="content" class="wrap not-found">
+    <p class="kicker">404</p>
+    <h1>Page not found</h1>
+    <p>That address is not on this site.</p>
+    <p lang="ja">このページはありません。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/">English home</a>
+      <a class="btn" href="/ja/" lang="ja">日本語</a>
+    </div>
+  </main>
+</Base>
